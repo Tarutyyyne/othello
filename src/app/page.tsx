@@ -19,12 +19,15 @@ export default function Home() {
   const clickHandler = (x: number, y: number) => {
     console.log(x, y);
     const newBoard = structuredClone(board);
-    if (board[y + 1] !== undefined && board[y + 1][x] === 2 / turnColor) {
-      newBoard[y][x] = turnColor;
-      setTurnColor(2 / turnColor);
-    }
 
-    setBoard(newBoard);
+    if (
+      board[y + 1] !== undefined &&
+      board[y + 1][x] === 2 / turnColor //下は違う色
+    ) {
+      newBoard[y][x] = turnColor;
+      setTurnColor(2 / turnColor); //ターンを変える
+    }
+    setBoard(newBoard); //盤面を更新
   };
 
   return (
