@@ -25,7 +25,6 @@ export default function Home() {
     [0, -1],
     [-1, -1],
   ];
-
   const clickHandler = (x: number, y: number) => {
     //console.log(x, y);
     const newBoard = structuredClone(board);
@@ -42,16 +41,34 @@ export default function Home() {
       if (board[newY] !== undefined && board[newY][newX] === 0) {
         continue;
       }
+      console.log(i);
+      console.log(board);
       //隣の石が異なる色をしているときに石をおける
       if (board[newY] !== undefined && board[newY][newX] === 2 / turnColor) {
-        if (board[newY + directions[i][0]][newX + directions[i][1]] === turnColor) {
-          newBoard[y][x] = turnColor;
-          newBoard[newY][newX] = turnColor;
-          setTurnColor(2 / turnColor);
-          setBoard(newBoard);
-        }
+        for (let j = 1; j < 8; j++) {
+          if (
+            board[newY + directions[i][0] * j] !== undefined &&
+            board[newY + directions[i][0] * j][newX + directions[i][1] * j] === 0
+          ) {
+            console.log(`a${j}`);
+            break;
+          }
+          if (
+            board[newY + directions[i][0] * j] !== undefined &&
+            board[newY + directions[i][0] * j][newX + directions[i][1] * j] === turnColor
+          ) {
+            newBoard[y][x] = turnColor;
+            for (let k = 0; k < j + 1; k++) {
+              newBoard[newY + directions[i][0] * k][newX + directions[i][1] * k] = turnColor;
+              console.log(j, k);
+            }
+            setTurnColor(2 / turnColor);
+            setBoard(newBoard);
+            break;
+          }
 
-        console.log(newY, newX);
+          console.log(newY, newX);
+        }
       }
     }
   };
