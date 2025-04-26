@@ -10,45 +10,88 @@ export default function Home() {
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 1, 2, 0, 0, 0],
-    [0, 0, 0, 2, 2, 0, 0, 0],
-    [0, 0, 0, 0, 2, 0, 0, 0],
-    [0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 2, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
+  const directions = [
+    [-1, 0],
+    [-1, 1],
+    [0, 1],
+    [1, 1],
+    [1, 0],
+    [1, -1],
+    [0, -1],
+    [-1, -1],
+  ];
 
   const clickHandler = (x: number, y: number) => {
     //console.log(x, y);
     const newBoard = structuredClone(board);
+    //クリックしたところが空白じゃなければreturnする
+    if (board[y][x] !== 0) {
+      return;
+    }
+    //クリックしたら八方向にむける
+    for (let i = 0; i < 8; i++) {
+      const newY: number = y + directions[i][0];
+      const newX: number = x + directions[i][1];
+      //board[newY]は存在しない配列を指すのでそこの要素を指定することはできない[newX]は不要
+      //周囲の空白のところの処理を飛ばす
+      if (board[newY] !== undefined && board[newY][newX] === 0) {
+        continue;
+      }
+      //隣の石が異なる色をしているときに石をおける
+      if (board[newY] !== undefined && board[newY][newX] === 2 / turnColor) {
+        if (board[newY + directions[i][0]][newX + directions[i][1]] === turnColor) {
+          newBoard[y][x] = turnColor;
+          newBoard[newY][newX] = turnColor;
+          setTurnColor(2 / turnColor);
+          setBoard(newBoard);
+        }
 
-    for (let i = 1; i < 8; i++) {
+        console.log(newY, newX);
+      }
+    }
+  };
+
+  const reverseBelow = (x: number, y: number, newBoard: number[][]) => {
+    //下方向
+    for (let i = 0; i < 8; i++) {
+      const newY: number = y + directions[4][0] * i;
+      console.log(i);
       //クリックした一個下が同じ色の時returnして終了
-      if (board[y + i] !== undefined && board[y + i][x] === turnColor && i === 1) {
-        console.log(x, y + i);
+      if (board[newY] !== undefined && board[newY][x] === turnColor && i === 1) {
+        console.log(x, newY);
         return;
       }
       //iがどのような値でも石の下に空白があるときreturnして終了
-      if (board[y + i] !== undefined && board[y + i][x] === 0) {
-        console.log(x, y + i);
+      if (board[newY] !== undefined && board[newY][x] === 0 && i !== 0) {
+        console.log(x, newY);
         return;
       }
+      console.log('w');
       //石の下に相手の色のがあるときcontinueしてfor文を続ける
-      if (board[y + i] !== undefined && board[y + i][x] === 2 / turnColor) {
+      if (board[newY] !== undefined && board[newY][x] === 2 / turnColor) {
         continue;
       }
+
+      console.log('A');
       //一個下が相手の色でそれより下に空白がなくて自分の色があるとき石を置ける
-      for (let j = 0; j < i; j++) {
+      for (let j = 0; j < i + 1; j++) {
         if (
           //y+jのところが空白または相手の色のときひっくり返す
           (board[y + j] !== undefined && board[y + j][x] === 2 / turnColor) ||
           (board[y + j] !== undefined && board[y + j][x] === 0)
         ) {
           newBoard[y + j][x] = turnColor;
-
+          console.log('turncolor');
           setTurnColor(2 / turnColor);
           setBoard(newBoard);
         }
       }
-      return;
+      //return;
     }
   };
 
