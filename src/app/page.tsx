@@ -9,11 +9,11 @@ export default function Home() {
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 2, 2, 2, 0, 0, 0],
-    [0, 0, 0, 2, 1, 0, 0, 0],
+    [0, 0, 0, 1, 2, 0, 0, 0],
+    [0, 0, 0, 2, 2, 0, 0, 0],
     [0, 0, 0, 0, 2, 0, 0, 0],
-    [0, 0, 0, 2, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
   const clickHandler = (x: number, y: number) => {
@@ -21,7 +21,7 @@ export default function Home() {
     const newBoard = structuredClone(board);
 
     for (let i = 1; i < 8; i++) {
-      //一個下が同じ色の時returnして終了
+      //クリックした一個下が同じ色の時returnして終了
       if (board[y + i] !== undefined && board[y + i][x] === turnColor && i === 1) {
         console.log(x, y + i);
         return;
@@ -36,21 +36,20 @@ export default function Home() {
         continue;
       }
       //一個下が相手の色でそれより下に空白がなくて自分の色があるとき石を置ける
-      newBoard[y][x] = turnColor;
-      setTurnColor(2 / turnColor);
-      setBoard(newBoard);
-    }
+      for (let j = 0; j < i; j++) {
+        if (
+          //y+jのところが空白または相手の色のときひっくり返す
+          (board[y + j] !== undefined && board[y + j][x] === 2 / turnColor) ||
+          (board[y + j] !== undefined && board[y + j][x] === 0)
+        ) {
+          newBoard[y + j][x] = turnColor;
 
-    // if (
-    //   board[y + i] !== undefined &&
-    //   board[y + i][x] === 2 / turnColor && //下は違う色
-    //   board[y + 2][x] === turnColor
-    // ) {
-    //   newBoard[y][x] = turnColor;
-    //   newBoard[y + 1][x] = turnColor;
-    //   setTurnColor(2 / turnColor); //ターンを変える
-    // }
-    //setBoard(newBoard); //盤面を更新
+          setTurnColor(2 / turnColor);
+          setBoard(newBoard);
+        }
+      }
+      return;
+    }
   };
 
   return (
