@@ -16,104 +16,73 @@ export default function Home() {
     [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
   const directions = [
-    [-1, 0],
-    [-1, 1],
-    [0, 1],
-    [1, 1],
-    [1, 0],
-    [1, -1],
-    [0, -1],
-    [-1, -1],
+    [-1, 0], //上
+    [-1, 1], //右上
+    [0, 1], //右
+    [1, 1], //右下
+    [1, 0], //下
+    [1, -1], //左下
+    [0, -1], //左
+    [-1, -1], //左上
   ];
+  const [currentColor, setCurrentColor] = useState('BLACK');
   const clickHandler = (x: number, y: number) => {
+    //以下clickHandlerについての関数
     //console.log(x, y);
-    const newBoard = structuredClone(board);
+    const newBoard = structuredClone(board); //以下structureClone()というboardの配列を変更する関数
     //クリックしたところが空白じゃなければreturnする
+
     if (board[y][x] !== 0) {
-      return;
+      return; //石があるところをクリックして関数を起動させてはいけない(関数を止める)
     }
+    //クリックしたところは空白ではないので関数を実行
     //クリックしたら八方向にむける
     for (let i = 0; i < 8; i++) {
       const newY: number = y + directions[i][0];
       const newX: number = x + directions[i][1];
-      //board[newY]は存在しない配列を指すのでそこの要素を指定することはできない[newX]は不要
-      //周囲の空白のところの処理を飛ばす
-      if (board[newY] !== undefined && board[newY][newX] === 0) {
-        continue;
-      }
-      console.log(i);
-      console.log(board);
       //隣の石が異なる色をしているときに石をおける
       if (board[newY] !== undefined && board[newY][newX] === 2 / turnColor) {
         for (let j = 1; j < 8; j++) {
+          //初期値+1に方向のベクトルをj倍かけてそこに空白がないか検索
+          const extendSearchY: number = directions[i][0] * j;
+          const extendSearchX: number = directions[i][1] * j;
           if (
-            board[newY + directions[i][0] * j] !== undefined &&
-            board[newY + directions[i][0] * j][newX + directions[i][1] * j] === 0
+            board[newY + extendSearchY] !== undefined &&
+            board[newY + extendSearchY][newX + extendSearchX] === 0
           ) {
-            console.log(`a${j}`);
-            break;
+            break; //そこに空白があれば石を置けないのでfor文を終わらせる
           }
+          //初期値+1に方向のベクトルをj倍かけてそこに同じ色がないか検索
           if (
-            board[newY + directions[i][0] * j] !== undefined &&
-            board[newY + directions[i][0] * j][newX + directions[i][1] * j] === turnColor
+            board[newY + extendSearchY] !== undefined &&
+            board[newY + extendSearchY][newX + extendSearchX] === turnColor
           ) {
             newBoard[y][x] = turnColor;
+            //ここで石をひっくり返す
+            //for文でkを使う理由はjで数えた分の石をひっくり返すためそれに収まるような変数kを設定
             for (let k = 0; k < j + 1; k++) {
               newBoard[newY + directions[i][0] * k][newX + directions[i][1] * k] = turnColor;
-              console.log(j, k);
             }
             setTurnColor(2 / turnColor);
             setBoard(newBoard);
-            break;
+
+            if (turnColor === 1) {
+              setCurrentColor('WHITE');
+            } else {
+              setCurrentColor('BLACK');
+            }
+            break; //石を置いたのにまだ続けるわけにはいかないから
           }
-
-          console.log(newY, newX);
         }
       }
-    }
-  };
-
-  const reverseBelow = (x: number, y: number, newBoard: number[][]) => {
-    //下方向
-    for (let i = 0; i < 8; i++) {
-      const newY: number = y + directions[4][0] * i;
-      console.log(i);
-      //クリックした一個下が同じ色の時returnして終了
-      if (board[newY] !== undefined && board[newY][x] === turnColor && i === 1) {
-        console.log(x, newY);
-        return;
-      }
-      //iがどのような値でも石の下に空白があるときreturnして終了
-      if (board[newY] !== undefined && board[newY][x] === 0 && i !== 0) {
-        console.log(x, newY);
-        return;
-      }
-      console.log('w');
-      //石の下に相手の色のがあるときcontinueしてfor文を続ける
-      if (board[newY] !== undefined && board[newY][x] === 2 / turnColor) {
-        continue;
-      }
-
-      console.log('A');
-      //一個下が相手の色でそれより下に空白がなくて自分の色があるとき石を置ける
-      for (let j = 0; j < i + 1; j++) {
-        if (
-          //y+jのところが空白または相手の色のときひっくり返す
-          (board[y + j] !== undefined && board[y + j][x] === 2 / turnColor) ||
-          (board[y + j] !== undefined && board[y + j][x] === 0)
-        ) {
-          newBoard[y + j][x] = turnColor;
-          console.log('turncolor');
-          setTurnColor(2 / turnColor);
-          setBoard(newBoard);
-        }
-      }
-      //return;
     }
   };
 
   return (
     <div className={styles.container}>
+      <div className={styles.background}>
+        <h1 className={styles.information}>Next color is {currentColor}</h1>
+      </div>
       <div className={styles.board}>
         {board.map((row, y) =>
           row.map((color, x) => (

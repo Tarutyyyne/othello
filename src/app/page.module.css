@@ -6,6 +6,25 @@
   height: 100vh;
   min-height: 100vh;
   padding: 0 0.5rem;
+  background-color: #ffc;
+}
+
+/* 下３つ要変更 */
+
+/* 次に置ける色に応じて文字もその色に対応させたい */
+
+.background {
+  color: maroon;
+}
+
+.information {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 40px;
+  color: var(--main-color);
+}
+
+.currentColor {
+  color: black;
 }
 
 .board {
