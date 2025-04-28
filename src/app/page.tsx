@@ -27,40 +27,9 @@ export default function Home() {
   ];
   const [currentColor, setCurrentColor] = useState('BLACK');
 
-  const board0black: number[] = board[0].filter((board) => board === 1);
-  const board1black: number[] = board[1].filter((board) => board === 1);
-  const board2black: number[] = board[2].filter((board) => board === 1);
-  const board3black: number[] = board[3].filter((board) => board === 1);
-  const board4black: number[] = board[4].filter((board) => board === 1);
-  const board5black: number[] = board[5].filter((board) => board === 1);
-  const board6black: number[] = board[6].filter((board) => board === 1);
-  const board7black: number[] = board[7].filter((board) => board === 1);
-  const blackAmount: number =
-    board0black.length +
-    board1black.length +
-    board2black.length +
-    board3black.length +
-    board4black.length +
-    board5black.length +
-    board6black.length +
-    board7black.length;
-  const board0white: number[] = board[0].filter((board) => board === 2);
-  const board1white: number[] = board[1].filter((board) => board === 2);
-  const board2white: number[] = board[2].filter((board) => board === 2);
-  const board3white: number[] = board[3].filter((board) => board === 2);
-  const board4white: number[] = board[4].filter((board) => board === 2);
-  const board5white: number[] = board[5].filter((board) => board === 2);
-  const board6white: number[] = board[6].filter((board) => board === 2);
-  const board7white: number[] = board[7].filter((board) => board === 2);
-  const whiteAmount: number =
-    board0white.length +
-    board1white.length +
-    board2white.length +
-    board3white.length +
-    board4white.length +
-    board5white.length +
-    board6white.length +
-    board7white.length;
+  //二次元配列のboardをflat()で一次元にならし、filter()で条件にあう要素だけを並べた新しい配列をつくり、その配列の長さを取得する
+  const blackAmount: number = board.flat().filter((board) => board === 1).length;
+  const whiteAmount: number = board.flat().filter((board) => board === 2).length;
 
   const clickHandler = (x: number, y: number) => {
     //クリックして変化する動作はすべてこの関数の中に記述する
@@ -139,7 +108,7 @@ export default function Home() {
               {color !== 0 && (
                 <div
                   className={styles.stone}
-                  style={{ background: color === 1 ? '#000' : '#fff' }}
+                  style={{ background: color === 1 ? '#000' : '#fff' }} //←これcurretColorの動的な変更に利用できませんか？
                 />
               )}
             </div>
