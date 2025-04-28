@@ -26,7 +26,44 @@ export default function Home() {
     [-1, -1], //左上
   ];
   const [currentColor, setCurrentColor] = useState('BLACK');
+
+  const board0black: number[] = board[0].filter((board) => board === 1);
+  const board1black: number[] = board[1].filter((board) => board === 1);
+  const board2black: number[] = board[2].filter((board) => board === 1);
+  const board3black: number[] = board[3].filter((board) => board === 1);
+  const board4black: number[] = board[4].filter((board) => board === 1);
+  const board5black: number[] = board[5].filter((board) => board === 1);
+  const board6black: number[] = board[6].filter((board) => board === 1);
+  const board7black: number[] = board[7].filter((board) => board === 1);
+  const blackAmount: number =
+    board0black.length +
+    board1black.length +
+    board2black.length +
+    board3black.length +
+    board4black.length +
+    board5black.length +
+    board6black.length +
+    board7black.length;
+  const board0white: number[] = board[0].filter((board) => board === 2);
+  const board1white: number[] = board[1].filter((board) => board === 2);
+  const board2white: number[] = board[2].filter((board) => board === 2);
+  const board3white: number[] = board[3].filter((board) => board === 2);
+  const board4white: number[] = board[4].filter((board) => board === 2);
+  const board5white: number[] = board[5].filter((board) => board === 2);
+  const board6white: number[] = board[6].filter((board) => board === 2);
+  const board7white: number[] = board[7].filter((board) => board === 2);
+  const whiteAmount: number =
+    board0white.length +
+    board1white.length +
+    board2white.length +
+    board3white.length +
+    board4white.length +
+    board5white.length +
+    board6white.length +
+    board7white.length;
+
   const clickHandler = (x: number, y: number) => {
+    //クリックして変化する動作はすべてこの関数の中に記述する
     //以下clickHandlerについての関数
     //console.log(x, y);
     const newBoard = structuredClone(board); //以下structureClone()というboardの配列を変更する関数
@@ -71,6 +108,14 @@ export default function Home() {
             } else {
               setCurrentColor('BLACK');
             }
+
+            // for (let l: number = 0; l < board.length; l++) {
+            //   const blackArray = board[l].forEach((value) => {
+            //     value === 1;
+            //   });
+            // }
+            // console.log(blackArray);
+
             break; //石を置いたのにまだ続けるわけにはいかないから
           }
         }
@@ -81,7 +126,11 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <div className={styles.background}>
-        <h1 className={styles.information}>Next color is {currentColor}</h1>
+        <div className={styles.information}>Next color is {currentColor}</div>
+        <div className={styles.displayAmount}>
+          <p className={styles.blackAmount}>BLACK: {blackAmount} </p>
+          <p className={styles.whiteAmount}>WHITE: {whiteAmount}</p>
+        </div>
       </div>
       <div className={styles.board}>
         {board.map((row, y) =>

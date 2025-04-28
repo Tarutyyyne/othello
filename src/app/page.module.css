@@ -6,25 +6,40 @@
   height: 100vh;
   min-height: 100vh;
   padding: 0 0.5rem;
-  background-color: #ffc;
+  background-color: #300;
 }
 
 /* 下３つ要変更 */
 
-/* 次に置ける色に応じて文字もその色に対応させたい */
+/* 次に置ける色に応じて文字もその色に対応させたい
+   その話はいったん凍結する */
 
 .background {
-  color: maroon;
+  background-color: #ffc;
 }
 
 .information {
-  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  font-family: fantasy;
   font-size: 40px;
-  color: var(--main-color);
+  color: var(--main-color); /* css変数を参照 */
 }
 
-.currentColor {
+.displayAmount {
+  display: flex;
+  justify-content: center;
+  justify-content: space-around;
+  font-size: 20px;
+}
+
+.blackAmount {
   color: black;
+  background-color: white;
+}
+
+.whiteAmount {
+  color: white;
+  background-color: black;
 }
 
 .board {
