@@ -47,21 +47,21 @@ export default function Home() {
       const newY: number = y + directions[i][0];
       const newX: number = x + directions[i][1];
       //隣の石が異なる色をしているときに石をおける
-      if (board[newY] !== undefined && board[newY][newX] === 2 / turnColor) {
+      if (newBoard[newY] !== undefined && newBoard[newY][newX] === 2 / turnColor) {
         for (let j = 1; j < 8; j++) {
           //初期値+1に方向のベクトルをj倍かけてそこに空白がないか検索
           const extendSearchY: number = directions[i][0] * j;
           const extendSearchX: number = directions[i][1] * j;
           if (
-            board[newY + extendSearchY] !== undefined &&
-            board[newY + extendSearchY][newX + extendSearchX] === 0
+            newBoard[newY + extendSearchY] !== undefined &&
+            newBoard[newY + extendSearchY][newX + extendSearchX] === 0
           ) {
             break; //そこに空白があれば石を置けないのでfor文を終わらせる
           }
           //初期値+1に方向のベクトルをj倍かけてそこに同じ色がないか検索
           if (
-            board[newY + extendSearchY] !== undefined &&
-            board[newY + extendSearchY][newX + extendSearchX] === turnColor
+            newBoard[newY + extendSearchY] !== undefined &&
+            newBoard[newY + extendSearchY][newX + extendSearchX] === turnColor
           ) {
             newBoard[y][x] = turnColor;
             //ここで石をひっくり返す
@@ -77,13 +77,6 @@ export default function Home() {
             } else {
               setCurrentColor('BLACK');
             }
-
-            // for (let l: number = 0; l < board.length; l++) {
-            //   const blackArray = board[l].forEach((value) => {
-            //     value === 1;
-            //   });
-            // }
-            // console.log(blackArray);
 
             break; //石を置いたのにまだ続けるわけにはいかないから
           }
