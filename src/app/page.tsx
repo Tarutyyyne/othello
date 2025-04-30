@@ -8,10 +8,10 @@ export default function Home() {
   const [board, setBoard] = useState([
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 3, 0, 0, 0],
-    [0, 0, 3, 1, 2, 3, 0, 0],
-    [0, 0, 0, 2, 1, 0, 0, 0],
-    [0, 0, 0, 3, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
@@ -31,6 +31,11 @@ export default function Home() {
   //二次元配列のboardをflat()で一次元にならし、filter()で条件にあう要素だけを並べた新しい配列をつくり、その配列の長さを取得する
   const blackAmount: number = board.flat().filter((board) => board === 1).length;
   const whiteAmount: number = board.flat().filter((board) => board === 2).length;
+  const redAmount: number = board.flat().filter((board) => board === 3).length;
+  //countPassをここで定義
+  // console.log('check through');
+  // let countPass: number = 0;
+  // console.log('check countPass');
 
   //そのx,y座標に次のターンの色の石を置けるかを判定する関数
   const puttableSearch = (x: number, y: number) => {
@@ -89,6 +94,20 @@ export default function Home() {
     if (board[y][x] % 3 !== 0) {
       return; //白と黒の石があるところをクリックして関数を起動させてはいけない(関数を止める)
     }
+    //候補地の表示がなくなったときにパスを実行
+
+    console.log(countPass);
+    if (redAmount === 0) {
+      // if (countPass === 0 || countPass === 1) {
+      setTurnColor(2 / turnColor);
+      displayPuttableCell();
+      // countPass += 1;
+      // console.log(countPass);
+      console.log('Pass Your Turn');
+      // } else {
+      // console.log('Game Over');
+      // }
+    }
     //クリックしたところは空白ではないので関数を実行
     //クリックしたら八方向にむける
     for (let i = 0; i < 8; i++) {
@@ -120,6 +139,10 @@ export default function Home() {
             setTurnColor(2 / turnColor);
             displayPuttableCell();
             setBoard(newBoard);
+            console.log('reset countPass');
+            console.log(countPass);
+            countPass = 0;
+            console.log(countPass);
 
             break; //石を置いたのにまだ続けるわけにはいかないから
           }
