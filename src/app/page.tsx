@@ -26,7 +26,6 @@ export default function Home() {
     [-1, -1], //左上
   ];
   const newBoard = structuredClone(board); //以下structureClone()というboardの配列を変更する関数
-  const [currentColor, setCurrentColor] = useState('BLACK'); //TODO:無駄なので後で消す
   const flatBoard: number[] = board.flat();
 
   //二次元配列のboardをflat()で一次元にならし、filter()で条件にあう要素だけを並べた新しい配列をつくり、その配列の長さを取得する
@@ -75,7 +74,7 @@ export default function Home() {
   //for文で64マスそれぞれにputtableSearch()を実行して候補地を表示する関数
   const displayPuttableCell = () => {
     //要修正丸パクリいや
-    for (let p = 0; p < 64; p++) {
+    for (let p = 0; p < flatBoard.length; p++) {
       const coordinateX = p % 8;
       const coordinateY = Math.floor(p / 8);
       puttableSearch(coordinateX, coordinateY);
@@ -122,12 +121,6 @@ export default function Home() {
             displayPuttableCell();
             setBoard(newBoard);
 
-            if (turnColor === 1) {
-              setCurrentColor('WHITE');
-            } else {
-              setCurrentColor('BLACK');
-            }
-
             break; //石を置いたのにまだ続けるわけにはいかないから
           }
         }
@@ -138,7 +131,9 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <div className={styles.background}>
-        <div className={styles.information}>Next color is {currentColor}</div>
+        <div className={styles.information}>
+          Next color is {turnColor === 1 ? 'BLACK' : 'WHITE'}
+        </div>
         <div className={styles.displayAmount}>
           <p className={styles.blackAmount}>BLACK: {blackAmount} </p>
           <p className={styles.whiteAmount}>WHITE: {whiteAmount}</p>
