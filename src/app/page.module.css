@@ -6,7 +6,7 @@
   height: 100vh;
   min-height: 100vh;
   padding: 0 0.5rem;
-  background-color: #300;
+  background-color: gray;
 }
 
 /* 下３つ要変更 */
@@ -15,7 +15,7 @@
    その話はいったん凍結する */
 
 .background {
-  background-color: #ffc;
+  background-color: lightgray;
 }
 
 .information {
@@ -43,6 +43,7 @@
 }
 
 .board {
+  /* position: absolute; */
   display: flex;
   flex-wrap: wrap;
   width: 640px;
@@ -57,12 +58,12 @@
   justify-content: center;
   width: 80px;
   height: 80px;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 
 .stone {
   width: 56px;
   height: 56px;
-  background-color: white;
+  background-color: #fafad2;
   border-radius: 50%;
 }
