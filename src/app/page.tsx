@@ -3,6 +3,20 @@
 import { useState } from 'react';
 import styles from './page.module.css';
 
+//白、黒、候補地の数を呼び出す関数
+//boardを渡し、それをflat()で一次元にならし、filter()で条件にあう要素だけを並べた新しい配列をつくり、その配列の長さを取得する
+//3つの個数をそれぞれamountArrayに挿入、引数amountIndexで要素を指定しreturnで個数を呼び出す
+//引数：board: number[][], amountIndex: number
+//戻り値：amountArray[amountIndex]
+const getColorAmount = (board: number[][], amountIndex: number) => {
+  const emptyAmount: number = board.flat().filter((board) => board === 0).length; //#TODO emptyAmountは後で何かしらに使いたい
+  const blackAmount: number = board.flat().filter((board) => board === 1).length;
+  const whiteAmount: number = board.flat().filter((board) => board === 2).length;
+  const redAmount: number = board.flat().filter((board) => board === 3).length;
+  const amountArray: number[] = [emptyAmount, blackAmount, whiteAmount, redAmount];
+  return amountArray[amountIndex];
+};
+
 //方向を示すための配列、上から時計回り
 const directions = [
   [-1, 0], //上
@@ -17,13 +31,14 @@ const directions = [
 
 //そのx,y座標に次のターンの色の石を置けるかを判定する関数
 const puttableSearch = (
-  board: number[][],
+  board: number[][], //#TODOあとでチェックする
   newBoard: number[][],
   directions: number[][],
   x: number,
   y: number,
   turnColor: number,
 ) => {
+  //#TODOこのifとforを減らしたい
   //このx,yはそのマスのx,y座標
   //そこに候補地が表示されていたら一度クリーンする
   if (newBoard[y][x] === 3) {
@@ -78,38 +93,35 @@ const displayPuttableCell = (
   }
 };
 
+//============以下home====================================
 export default function Home() {
   const [turnColor, setTurnColor] = useState(1);
   const [board, setBoard] = useState([
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 3, 0, 0, 0, 0],
-    [0, 0, 3, 2, 1, 0, 0, 0],
-    [0, 0, 0, 1, 2, 3, 0, 0],
-    [0, 0, 0, 0, 3, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 2, 2, 0, 0, 0],
+    [0, 0, 0, 2, 2, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
+  const newBoard: number[][] = structuredClone(board); //以下structureClone()というboardの配列を変更する関数
 
-  const newBoard = structuredClone(board); //以下structureClone()というboardの配列を変更する関数
-
-  //二次元配列のboardをflat()で一次元にならし、filter()で条件にあう要素だけを並べた新しい配列をつくり、その配列の長さを取得する
-  const blackAmount: number = board.flat().filter((board) => board === 1).length;
-  const whiteAmount: number = board.flat().filter((board) => board === 2).length;
-  const redAmount: number = board.flat().filter((board) => board === 3).length;
+  //#TODOuseStateを使わない方法を要検討
   //countPassをここで定義;
   const [countPass, setCountPass] = useState(0);
 
-  const clickHandler = (x: number, y: number) => {
+  const clickHandler = (x: number, y: number, newBoard: number[][]) => {
     //クリックして変化する動作はすべてこの関数の中に記述する
     //以下clickHandlerについての関数
-    //クリックしたところが空白じゃなければreturnする
 
+    //クリックしたところが空白じゃなければreturnする
     if (board[y][x] % 3 !== 0) {
       return; //白と黒の石があるところをクリックして関数を起動させてはいけない(関数を止める)
     }
     //候補地の表示がなくなったときにパスを実行
-    if (redAmount === 0) {
+    if (getColorAmount(board, 3) === 0) {
       if (countPass === 0) {
         setTurnColor(2 / turnColor);
         displayPuttableCell(board, newBoard, directions, turnColor);
@@ -117,7 +129,7 @@ export default function Home() {
         console.log('Pass Your Turn');
       }
       if (countPass === 1) {
-        if (redAmount === 0) {
+        if (getColorAmount(board, 3) === 0) {
           console.log('Game Over');
         }
       }
@@ -169,14 +181,18 @@ export default function Home() {
           Next color is {turnColor === 1 ? 'BLACK' : 'WHITE'}
         </div>
         <div className={styles.displayAmount}>
-          <p className={styles.blackAmount}>BLACK: {blackAmount} </p>
-          <p className={styles.whiteAmount}>WHITE: {whiteAmount}</p>
+          <p className={styles.blackAmount}>BLACK: {getColorAmount(board, 1)} </p>
+          <p className={styles.whiteAmount}>WHITE: {getColorAmount(board, 2)}</p>
         </div>
       </div>
       <div className={styles.board}>
         {board.map((row, y) =>
           row.map((color, x) => (
-            <div className={styles.cell} key={`${x}-${y}`} onClick={() => clickHandler(x, y)}>
+            <div
+              className={styles.cell}
+              key={`${x}-${y}`}
+              onClick={() => clickHandler(x, y, newBoard)}
+            >
               {color !== 0 && (
                 <div
                   className={styles.stone}
