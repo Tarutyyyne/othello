@@ -97,22 +97,30 @@ const displayPuttableCell = (
 export default function Home() {
   const [turnColor, setTurnColor] = useState(1);
   const [board, setBoard] = useState([
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 2, 2, 0, 0, 0],
-    [0, 0, 0, 2, 2, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
+    //#TODOパスの検証のために変更中後で直す
+    [3, 2, 2, 2, 2, 2, 2, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [2, 2, 2, 2, 2, 2, 2, 2],
+    [2, 2, 2, 2, 2, 2, 2, 2],
+    [2, 2, 2, 2, 2, 2, 2, 2],
+    [2, 2, 2, 2, 2, 2, 2, 2],
   ]);
-  const newBoard: number[][] = structuredClone(board); //以下structureClone()というboardの配列を変更する関数
-
-  //#TODOuseStateを使わない方法を要検討
-  //countPassをここで定義;
   const [countPass, setCountPass] = useState(0);
 
-  const clickHandler = (x: number, y: number, newBoard: number[][]) => {
+  //以下structureClone()というboardの配列を変更する関数
+  const newBoard: number[][] = structuredClone(board);
+
+  const clickHandler = (
+    x: number,
+    y: number,
+    board: number[][],
+    newBoard: number[][],
+    directions: number[][],
+    turnColor: number,
+    countPass: number,
+  ) => {
     //クリックして変化する動作はすべてこの関数の中に記述する
     //以下clickHandlerについての関数
 
@@ -120,20 +128,42 @@ export default function Home() {
     if (board[y][x] % 3 !== 0) {
       return; //白と黒の石があるところをクリックして関数を起動させてはいけない(関数を止める)
     }
+    if (getColorAmount(board, 0) === 0) {
+      setCountPass(2); //countPassを2にして終了
+    }
+
     //候補地の表示がなくなったときにパスを実行
-    if (getColorAmount(board, 3) === 0) {
-      if (countPass === 0) {
-        setTurnColor(2 / turnColor);
-        displayPuttableCell(board, newBoard, directions, turnColor);
-        setCountPass(1);
-        console.log('Pass Your Turn');
-      }
-      if (countPass === 1) {
-        if (getColorAmount(board, 3) === 0) {
-          console.log('Game Over');
+    const executePass = (
+      board: number[][],
+      newBoard: number[][],
+      countPass: number,
+      turnColor: number,
+    ) => {
+      console.log(countPass);
+      if (getColorAmount(board, 3) === 0) {
+        if (countPass === 0) {
+          setTurnColor(2 / turnColor);
+          displayPuttableCell(board, newBoard, directions, turnColor);
+          setCountPass(1);
+          console.log(countPass);
+          console.log('Pass Your Turn');
+          return;
+        }
+        if (countPass === 1) {
+          if (getColorAmount(board, 3) === 0) {
+            setCountPass(2);
+            console.log(countPass);
+            console.log('Game Over');
+          } else {
+            setTurnColor(2 / turnColor);
+            displayPuttableCell(board, newBoard, directions, turnColor);
+            setCountPass(0);
+          }
         }
       }
-    }
+    };
+    executePass(board, newBoard, countPass, turnColor);
+
     //クリックしたところは空白ではないので関数を実行
     //クリックしたら八方向にむける
     for (let i = 0; i < 8; i++) {
@@ -165,7 +195,6 @@ export default function Home() {
             displayPuttableCell(board, newBoard, directions, turnColor);
             setTurnColor(2 / turnColor);
             setBoard(newBoard);
-            setCountPass(0);
 
             break; //石を置いたのにまだ続けるわけにはいかないから
           }
@@ -178,11 +207,24 @@ export default function Home() {
     <div className={styles.container}>
       <div className={styles.background}>
         <div className={styles.information}>
-          Next color is {turnColor === 1 ? 'BLACK' : 'WHITE'}
+          {countPass === 0 ? (
+            <div>次は{turnColor === 1 ? '黒' : '白'}のターン</div>
+          ) : countPass === 1 ? (
+            <div>{turnColor === 1 ? '黒' : '白'} のパス</div>
+          ) : (
+            <div>
+              ゲームセット：
+              {getColorAmount(board, 1) < getColorAmount(board, 2)
+                ? '白の勝ち！'
+                : getColorAmount(board, 1) > getColorAmount(board, 2)
+                  ? '黒の勝ち！'
+                  : '引き分け！'}
+            </div>
+          )}
         </div>
         <div className={styles.displayAmount}>
-          <p className={styles.blackAmount}>BLACK: {getColorAmount(board, 1)} </p>
-          <p className={styles.whiteAmount}>WHITE: {getColorAmount(board, 2)}</p>
+          <p className={styles.blackAmount}>黒: {getColorAmount(board, 1)} </p>
+          <p className={styles.whiteAmount}>白: {getColorAmount(board, 2)}</p>
         </div>
       </div>
       <div className={styles.board}>
@@ -191,7 +233,7 @@ export default function Home() {
             <div
               className={styles.cell}
               key={`${x}-${y}`}
-              onClick={() => clickHandler(x, y, newBoard)}
+              onClick={() => clickHandler(x, y, board, newBoard, directions, turnColor, countPass)}
             >
               {color !== 0 && (
                 <div
