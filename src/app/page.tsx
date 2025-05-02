@@ -8,11 +8,11 @@ import styles from './page.module.css';
 //3つの個数をそれぞれamountArrayに挿入、引数amountIndexで要素を指定しreturnで個数を呼び出す
 //引数：board: number[][], amountIndex: number
 //戻り値：amountArray[amountIndex]
-const getColorAmount = (board: number[][], amountIndex: number) => {
-  const emptyAmount: number = board.flat().filter((board) => board === 0).length; //#TODO emptyAmountは後で何かしらに使いたい
-  const blackAmount: number = board.flat().filter((board) => board === 1).length;
-  const whiteAmount: number = board.flat().filter((board) => board === 2).length;
-  const redAmount: number = board.flat().filter((board) => board === 3).length;
+const getColorAmount = (newBoard: number[][], amountIndex: number) => {
+  const emptyAmount: number = newBoard.flat().filter((newBoard) => newBoard === 0).length; //#TODO emptyAmountは後で何かしらに使いたい
+  const blackAmount: number = newBoard.flat().filter((newBoard) => newBoard === 1).length;
+  const whiteAmount: number = newBoard.flat().filter((newBoard) => newBoard === 2).length;
+  const redAmount: number = newBoard.flat().filter((newBoard) => newBoard === 3).length;
   const amountArray: number[] = [emptyAmount, blackAmount, whiteAmount, redAmount];
   return amountArray[amountIndex];
 };
@@ -97,15 +97,24 @@ const displayPuttableCell = (
 export default function Home() {
   const [turnColor, setTurnColor] = useState(1);
   const [board, setBoard] = useState([
-    //#TODOパスの検証のために変更中後で直す
-    [3, 2, 2, 2, 2, 2, 2, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1],
-    [2, 2, 2, 2, 2, 2, 2, 2],
-    [2, 2, 2, 2, 2, 2, 2, 2],
-    [2, 2, 2, 2, 2, 2, 2, 2],
-    [2, 2, 2, 2, 2, 2, 2, 2],
+    //#TODOあとで戻す
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 3, 0, 0, 0, 0],
+    [0, 0, 3, 2, 1, 0, 0, 0],
+    [0, 0, 0, 1, 2, 3, 0, 0],
+    [0, 0, 0, 0, 3, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    //======検証用======
+    // [0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 3, 2, 1, 0, 0, 0],
+    // [0, 0, 0, 1, 1, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
   const [countPass, setCountPass] = useState(0);
 
@@ -128,41 +137,6 @@ export default function Home() {
     if (board[y][x] % 3 !== 0) {
       return; //白と黒の石があるところをクリックして関数を起動させてはいけない(関数を止める)
     }
-    if (getColorAmount(board, 0) === 0) {
-      setCountPass(2); //countPassを2にして終了
-    }
-
-    //候補地の表示がなくなったときにパスを実行
-    const executePass = (
-      board: number[][],
-      newBoard: number[][],
-      countPass: number,
-      turnColor: number,
-    ) => {
-      console.log(countPass);
-      if (getColorAmount(board, 3) === 0) {
-        if (countPass === 0) {
-          setTurnColor(2 / turnColor);
-          displayPuttableCell(board, newBoard, directions, turnColor);
-          setCountPass(1);
-          console.log(countPass);
-          console.log('Pass Your Turn');
-          return;
-        }
-        if (countPass === 1) {
-          if (getColorAmount(board, 3) === 0) {
-            setCountPass(2);
-            console.log(countPass);
-            console.log('Game Over');
-          } else {
-            setTurnColor(2 / turnColor);
-            displayPuttableCell(board, newBoard, directions, turnColor);
-            setCountPass(0);
-          }
-        }
-      }
-    };
-    executePass(board, newBoard, countPass, turnColor);
 
     //クリックしたところは空白ではないので関数を実行
     //クリックしたら八方向にむける
@@ -192,8 +166,24 @@ export default function Home() {
             for (let k = 0; k < j + 1; k++) {
               newBoard[nextY + directions[i][0] * k][nextX + directions[i][1] * k] = turnColor;
             }
+
+            //パスと強制終了の実装
+            //まずdisplayPuttableCellで候補地を検索
+            //候補地が0のときならばsetCountPass(1)を実行、「パス」を表示
+            //
             displayPuttableCell(board, newBoard, directions, turnColor);
-            setTurnColor(2 / turnColor);
+            if (getColorAmount(newBoard, 3) === 0) {
+              console.log('a');
+              setCountPass(1); //setCountPass(1)で●●のパスと表示できるはず
+              displayPuttableCell(board, newBoard, directions, 2 / turnColor);
+              if (getColorAmount(newBoard, 3) === 0) {
+                console.log('b');
+                setCountPass(2);
+              }
+            } else {
+              setTurnColor(2 / turnColor);
+              setCountPass(0);
+            }
             setBoard(newBoard);
 
             break; //石を置いたのにまだ続けるわけにはいかないから
@@ -201,17 +191,18 @@ export default function Home() {
         }
       }
     }
+    if (getColorAmount(newBoard, 1) + getColorAmount(newBoard, 2) === 64) {
+      setCountPass(2);
+    }
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.background}>
         <div className={styles.information}>
-          {countPass === 0 ? (
-            <div>次は{turnColor === 1 ? '黒' : '白'}のターン</div>
-          ) : countPass === 1 ? (
-            <div>{turnColor === 1 ? '黒' : '白'} のパス</div>
-          ) : (
+          {/* {countPass === 1 && <div>{2 / turnColor === 1 ? '黒' : '白'} のパス：</div>}
+          {<div>次は{turnColor === 1 ? '黒' : '白'}のターン</div>}
+          {countPass === 2 && (
             <div>
               ゲームセット：
               {getColorAmount(board, 1) < getColorAmount(board, 2)
@@ -220,12 +211,24 @@ export default function Home() {
                   ? '黒の勝ち！'
                   : '引き分け！'}
             </div>
+          )} */}
+          {countPass === 2 ? (
+            <div>
+              ゲームセット：
+              {getColorAmount(board, 1) < getColorAmount(board, 2)
+                ? '白の勝ち！'
+                : getColorAmount(board, 1) > getColorAmount(board, 2)
+                  ? '黒の勝ち！'
+                  : '引き分け！'}
+            </div>
+          ) : (
+            <div>
+              {countPass === 1 && `${2 / turnColor === 1 ? '黒' : '白'} のパス：`}
+              次は{turnColor === 1 ? '黒' : '白'}のターン
+            </div>
           )}
         </div>
-        <div className={styles.displayAmount}>
-          <p className={styles.blackAmount}>黒: {getColorAmount(board, 1)} </p>
-          <p className={styles.whiteAmount}>白: {getColorAmount(board, 2)}</p>
-        </div>
+        <div className={styles.displayAmount} />
       </div>
       <div className={styles.board}>
         {board.map((row, y) =>
