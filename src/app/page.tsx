@@ -3,6 +3,18 @@
 import { useState } from 'react';
 import styles from './page.module.css';
 
+//方向を示すための配列、上から時計回り
+const directions = [
+  [-1, 0], //上
+  [-1, 1], //右上
+  [0, 1], //右
+  [1, 1], //右下
+  [1, 0], //下
+  [1, -1], //左下
+  [0, -1], //左
+  [-1, -1], //左上
+];
+
 //そのx,y座標に次のターンの色の石を置けるかを判定する関数
 const puttableSearch = (
   board: number[][],
@@ -15,7 +27,6 @@ const puttableSearch = (
   //このx,yはそのマスのx,y座標
   //そこに候補地が表示されていたら一度クリーンする
   if (newBoard[y][x] === 3) {
-    console.log('a');
     newBoard[y][x] = 0;
   }
   //そこに白黒があったらreturnして終了
@@ -50,7 +61,10 @@ const puttableSearch = (
   }
 };
 
-//for文で64マスそれぞれにputtableSearch()を実行して候補地を表示する関数
+//64マス一つ一つにputtableSearchを実行させる
+//for文でiを64まで回しそのマスのｘ、ｙ座標（coordinateX, coordinateY）を求めそれをputtableSearchに渡す
+//引数：board, newBoard, directions, turnColor
+//戻り値：なし
 const displayPuttableCell = (
   board: number[][],
   newBoard: number[][],
@@ -61,7 +75,6 @@ const displayPuttableCell = (
     const coordinateX = p % 8;
     const coordinateY = Math.floor(p / 8);
     puttableSearch(board, newBoard, directions, coordinateX, coordinateY, turnColor);
-    console.log(board[coordinateY][coordinateX]);
   }
 };
 
@@ -70,23 +83,14 @@ export default function Home() {
   const [board, setBoard] = useState([
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 3, 0, 0, 0],
-    [0, 0, 0, 1, 2, 3, 0, 0],
-    [0, 0, 3, 2, 1, 0, 0, 0],
     [0, 0, 0, 3, 0, 0, 0, 0],
+    [0, 0, 3, 2, 1, 0, 0, 0],
+    [0, 0, 0, 1, 2, 3, 0, 0],
+    [0, 0, 0, 0, 3, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
-  const directions = [
-    [-1, 0], //上
-    [-1, 1], //右上
-    [0, 1], //右
-    [1, 1], //右下
-    [1, 0], //下
-    [1, -1], //左下
-    [0, -1], //左
-    [-1, -1], //左上
-  ];
+
   const newBoard = structuredClone(board); //以下structureClone()というboardの配列を変更する関数
 
   //二次元配列のboardをflat()で一次元にならし、filter()で条件にあう要素だけを並べた新しい配列をつくり、その配列の長さを取得する
@@ -105,13 +109,11 @@ export default function Home() {
       return; //白と黒の石があるところをクリックして関数を起動させてはいけない(関数を止める)
     }
     //候補地の表示がなくなったときにパスを実行
-
     if (redAmount === 0) {
       if (countPass === 0) {
         setTurnColor(2 / turnColor);
         displayPuttableCell(board, newBoard, directions, turnColor);
         setCountPass(1);
-        console.log(countPass);
         console.log('Pass Your Turn');
       }
       if (countPass === 1) {
@@ -151,7 +153,6 @@ export default function Home() {
             displayPuttableCell(board, newBoard, directions, turnColor);
             setTurnColor(2 / turnColor);
             setBoard(newBoard);
-            console.log('reset countPass');
             setCountPass(0);
 
             break; //石を置いたのにまだ続けるわけにはいかないから
