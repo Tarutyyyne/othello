@@ -185,11 +185,14 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.background}>
-        <div className={styles.information}>
+      <div
+        className={styles.gameLogBackground}
+        style={{ background: turnColor === 1 ? '#000' : '#f8f8ff' }}
+      >
+        <div className={styles.gameLogInformation}>
           {countPass === 2 ? (
             <div>
-              ゲームセット：
+              ゲームセット：{Math.abs(getColorAmount(board, 1) - getColorAmount(board, 2))}枚差で
               {getColorAmount(board, 1) < getColorAmount(board, 2)
                 ? '白の勝ち！'
                 : getColorAmount(board, 1) > getColorAmount(board, 2)
@@ -203,11 +206,19 @@ export default function Home() {
             </div>
           )}
         </div>
-        <div className={styles.displayAmount}>
+        {/* <div className={styles.displayAmount}>
           <p className={styles.blackAmount}>BLACK: {getColorAmount(board, 1)} </p>
           <p className={styles.whiteAmount}>WHITE: {getColorAmount(board, 2)}</p>
-        </div>
+        </div> */}
       </div>
+      <div className={styles.gapSpace} />
+      {/* 黒の石の情報 */}
+      <div className={styles.stoneInformation}>
+        <div className={styles.stone} style={{ background: '#000' }} />
+        <div className={styles.stoneAmount}>{getColorAmount(board, 1)}枚</div>
+      </div>
+      <div className={styles.gapSpace} />
+      {/* ボードの情報 */}
       <div className={styles.board}>
         {board.map((row, y) =>
           row.map((color, x) => (
@@ -224,10 +235,10 @@ export default function Home() {
                       color === 1
                         ? '#000'
                         : color === 2
-                          ? '#fff'
+                          ? '#f8f8ff'
                           : turnColor === 1
                             ? '#000'
-                            : '#fff',
+                            : '#f8f8ff',
                     width: color === 3 ? '24px' : '56px',
                     height: color === 3 ? '24px' : '56px',
                   }}
@@ -237,6 +248,15 @@ export default function Home() {
           )),
         )}
       </div>
+      <div className={styles.gapSpace} />
+      {/* 白の石の情報 */}
+      <div className={styles.stoneInformation}>
+        <div className={styles.stoneAmount}>{getColorAmount(board, 2)}枚</div>
+        <div className={styles.stone} style={{ background: '#f8f8ff' }} />
+      </div>
     </div>
   );
 }
+
+// #TODO何枚優勢なのか表示するのかは任せる
+//そのためにはif文回す必要あり

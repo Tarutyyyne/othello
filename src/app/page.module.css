@@ -6,23 +6,45 @@
   height: 100vh;
   min-height: 100vh;
   padding: 0 0.5rem;
-  background-color: gray;
+  background-color: #f5f5dc;
 }
 
-/* 下３つ要変更 */
+.gapSpace {
+  width: 640px;
+  height: 10px;
+}
 
-/* 次に置ける色に応じて文字もその色に対応させたい
-   その話はいったん凍結する */
+.gameLogBackground {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 640px;
+  height: 80px;
+  border: 1px solid black;
+}
 
-.background {
+.gameLogInformation {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 95%;
+  aspect-ratio: 10 / 1;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 36px;
   background-color: lightgray;
 }
 
-.information {
+.stoneInformation {
   display: flex;
-  font-family: fantasy;
-  font-size: 40px;
-  color: var(--main-color); /* css変数を参照 */
+  flex-direction: row;
+  justify-content: space-between;
+  width: 640px;
+  height: 58px;
+  background-color: #98fb98;
+  border: 1px solid #006400;
+  border-radius: 28px;
 }
 
 .displayAmount {
@@ -32,15 +54,12 @@
   font-size: 20px;
 }
 
-.blackAmount {
-  color: black;
-  background-color: white;
+.stoneAmount {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 40px;
 }
 
-.whiteAmount {
-  color: white;
-  background-color: black;
-}
+/* ここまでを変更したい */
 
 .board {
   /* position: absolute; */
@@ -64,6 +83,6 @@
 .stone {
   width: 56px;
   height: 56px;
-  background-color: #fafad2;
+  background-color: black;
   border-radius: 50%;
 }
