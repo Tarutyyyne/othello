@@ -97,7 +97,6 @@ const displayPuttableCell = (
 export default function Home() {
   const [turnColor, setTurnColor] = useState(1);
   const [board, setBoard] = useState([
-    //#TODOあとで戻す
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 3, 0, 0, 0, 0],
@@ -106,15 +105,6 @@ export default function Home() {
     [0, 0, 0, 0, 3, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
-    //======検証用======
-    // [0, 0, 0, 0, 0, 0, 0, 0],
-    // [0, 0, 0, 0, 0, 0, 0, 0],
-    // [0, 0, 0, 0, 0, 0, 0, 0],
-    // [0, 0, 3, 2, 1, 0, 0, 0],
-    // [0, 0, 0, 1, 1, 0, 0, 0],
-    // [0, 0, 0, 0, 0, 0, 0, 0],
-    // [0, 0, 0, 0, 0, 0, 0, 0],
-    // [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
   const [countPass, setCountPass] = useState(0);
 
@@ -130,9 +120,6 @@ export default function Home() {
     turnColor: number,
     countPass: number,
   ) => {
-    //クリックして変化する動作はすべてこの関数の中に記述する
-    //以下clickHandlerについての関数
-
     //クリックしたところが空白じゃなければreturnする
     if (board[y][x] % 3 !== 0) {
       return; //白と黒の石があるところをクリックして関数を起動させてはいけない(関数を止める)
@@ -200,18 +187,6 @@ export default function Home() {
     <div className={styles.container}>
       <div className={styles.background}>
         <div className={styles.information}>
-          {/* {countPass === 1 && <div>{2 / turnColor === 1 ? '黒' : '白'} のパス：</div>}
-          {<div>次は{turnColor === 1 ? '黒' : '白'}のターン</div>}
-          {countPass === 2 && (
-            <div>
-              ゲームセット：
-              {getColorAmount(board, 1) < getColorAmount(board, 2)
-                ? '白の勝ち！'
-                : getColorAmount(board, 1) > getColorAmount(board, 2)
-                  ? '黒の勝ち！'
-                  : '引き分け！'}
-            </div>
-          )} */}
           {countPass === 2 ? (
             <div>
               ゲームセット：
@@ -244,7 +219,18 @@ export default function Home() {
               {color !== 0 && (
                 <div
                   className={styles.stone}
-                  style={{ background: color === 1 ? '#000' : color === 2 ? '#fff' : '#f00' }} //←これcurretColorの動的な変更に利用できませんか？
+                  style={{
+                    background:
+                      color === 1
+                        ? '#000'
+                        : color === 2
+                          ? '#fff'
+                          : turnColor === 1
+                            ? '#000'
+                            : '#fff',
+                    width: color === 3 ? '24px' : '56px',
+                    height: color === 3 ? '24px' : '56px',
+                  }}
                 />
               )}
             </div>
