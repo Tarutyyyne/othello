@@ -93,14 +93,18 @@ const displayPuttableCell = (
   }
 };
 
-const restBlackStone: number[] = [
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-  27, 28, 29,
-];
-const restWhiteStone: number[] = [
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-  27, 28, 29,
-];
+// const restBlackStone: number[] = [
+//   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+//   27, 28, 29,
+// ];
+//上のやり方はスマートじゃないので以下のやり方を使う
+//もっとも推奨されるのはこのやり方
+//{ length: 30 }からArray.fromに渡すことで「長さ30の空配列」ができる
+//その各要素に対して、マッピング関数(-, i) => i + 1 を適用させることで[1, 2, 3, ...30]の配列が作成
+//別のやり方として下記のスプレッド構文があるがこれは型注釈の警告が出るので使わないことにした
+//const restWhiteStone: number[] = ([...Array(30)] as number[]).map((_, i) => i + 1);
+const restBlackStone: number[] = Array.from({ length: 30 }, (_, i) => i + 1);
+const restWhiteStone: number[] = Array.from({ length: 30 }, (_, i) => i + 1);
 
 const reduceRestStone = (turnColor: number, restBlackStone: number[], restWhiteStone: number[]) => {
   //お互いに石がまだ手元にあるとき
@@ -193,7 +197,6 @@ export default function Home() {
             //パスと強制終了の実装
             //まずdisplayPuttableCellで候補地を検索
             //候補地が0のときならばsetCountPass(1)を実行、「パス」を表示
-            //
             displayPuttableCell(board, newBoard, directions, turnColor);
             if (getColorAmount(newBoard, 3) === 0) {
               setCountPass(1); //setCountPass(1)で●●のパスと表示できるはず
