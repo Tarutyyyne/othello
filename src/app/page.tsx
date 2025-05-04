@@ -158,7 +158,6 @@ export default function Home() {
     directions: number[][],
     turnColor: number,
   ) => {
-    console.log('======TURN', 60 + 1 - (restBlackStone.length + restWhiteStone.length), '=====');
     //クリックしたところが
     // 空白じゃなければreturnする
     if (board[y][x] % 3 !== 0) {
@@ -218,7 +217,6 @@ export default function Home() {
         }
       }
     }
-
     //全て置けたら終了にする
     if (getColorAmount(newBoard, 1) + getColorAmount(newBoard, 2) === 64) {
       setCountPass(2);
@@ -230,6 +228,11 @@ export default function Home() {
     }
   };
 
+  //リスタートボタンの中身
+  const resetHandler = () => {
+    window.location.reload();
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.turnAndResetButton}>
@@ -237,9 +240,12 @@ export default function Home() {
           {64 - restBlackStone.length - restWhiteStone.length - 4}
           手目
         </div>
-        <div className={styles.resetButton}>reset</div>
+        <button className={styles.resetButton} onClick={() => resetHandler()}>
+          リスタート
+        </button>
       </div>
       <div className={styles.gapSpace} />
+
       <div
         className={styles.gameLogBackground}
         style={{ background: turnColor === 1 ? '#000' : '#f8f8ff' }}
@@ -262,6 +268,8 @@ export default function Home() {
           )}
         </div>
       </div>
+      <div className={styles.gapSpace} />
+      <div className={styles.gapSpace} />
       <div className={styles.gapSpace} />
       {/* 黒の石の情報 */}
       <div className={styles.stoneInformation}>
