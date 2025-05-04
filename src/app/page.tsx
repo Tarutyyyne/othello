@@ -232,6 +232,14 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
+      <div className={styles.turnAndResetButton}>
+        <div className={styles.displayTurn}>
+          {64 - restBlackStone.length - restWhiteStone.length - 4}
+          手目
+        </div>
+        <div className={styles.resetButton}>reset</div>
+      </div>
+      <div className={styles.gapSpace} />
       <div
         className={styles.gameLogBackground}
         style={{ background: turnColor === 1 ? '#000' : '#f8f8ff' }}
