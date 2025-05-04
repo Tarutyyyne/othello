@@ -9,7 +9,7 @@ import styles from './page.module.css';
 //引数：board: number[][], amountIndex: number
 //戻り値：amountArray[amountIndex]
 const getColorAmount = (newBoard: number[][], amountIndex: number) => {
-  const emptyAmount: number = newBoard.flat().filter((newBoard) => newBoard === 0).length; //#TODO emptyAmountは後で何かしらに使いたい
+  const emptyAmount: number = newBoard.flat().filter((newBoard) => newBoard === 0).length;
   const blackAmount: number = newBoard.flat().filter((newBoard) => newBoard === 1).length;
   const whiteAmount: number = newBoard.flat().filter((newBoard) => newBoard === 2).length;
   const redAmount: number = newBoard.flat().filter((newBoard) => newBoard === 3).length;
@@ -93,6 +93,28 @@ const displayPuttableCell = (
   }
 };
 
+const restBlackStone: number[] = [
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+  27, 28, 29,
+];
+const restWhiteStone: number[] = [
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+  27, 28, 29,
+];
+
+const reduceRestStone = (turnColor: number, restBlackStone: number[], restWhiteStone: number[]) => {
+  if (turnColor === 1) {
+    console.log('reduceBlackStone');
+    restBlackStone.pop();
+    return restBlackStone.length;
+  }
+  if (turnColor === 2) {
+    console.log('reduceWhiteStone');
+    restWhiteStone.pop();
+    return restWhiteStone.length;
+  }
+};
+
 //============以下home====================================
 export default function Home() {
   const [turnColor, setTurnColor] = useState(1);
@@ -120,11 +142,12 @@ export default function Home() {
     turnColor: number,
     countPass: number,
   ) => {
-    //クリックしたところが空白じゃなければreturnする
+    console.log('======TURN', 60 + 1 - (restBlackStone.length + restWhiteStone.length), '=====');
+    //クリックしたところが
+    // 空白じゃなければreturnする
     if (board[y][x] % 3 !== 0) {
       return; //白と黒の石があるところをクリックして関数を起動させてはいけない(関数を止める)
     }
-
     //クリックしたところは空白ではないので関数を実行
     //クリックしたら八方向にむける
     for (let i = 0; i < 8; i++) {
@@ -148,6 +171,7 @@ export default function Home() {
             newBoard[nextY + extendSearchY][nextX + extendSearchX] === turnColor
           ) {
             newBoard[y][x] = turnColor;
+
             //ここで石をひっくり返す
             //for文でkを使う理由はjで数えた分の石をひっくり返すためそれに収まるような変数kを設定
             for (let k = 0; k < j + 1; k++) {
@@ -160,24 +184,25 @@ export default function Home() {
             //
             displayPuttableCell(board, newBoard, directions, turnColor);
             if (getColorAmount(newBoard, 3) === 0) {
-              console.log('a');
               setCountPass(1); //setCountPass(1)で●●のパスと表示できるはず
               displayPuttableCell(board, newBoard, directions, 2 / turnColor);
               if (getColorAmount(newBoard, 3) === 0) {
-                console.log('b');
                 setCountPass(2);
               }
             } else {
               setTurnColor(2 / turnColor);
               setCountPass(0);
             }
+            //石を置けたので残りの石を減らす
+            reduceRestStone(turnColor, restBlackStone, restWhiteStone);
             setBoard(newBoard);
-
             break; //石を置いたのにまだ続けるわけにはいかないから
           }
         }
       }
     }
+
+    //全て置けたら終了にする
     if (getColorAmount(newBoard, 1) + getColorAmount(newBoard, 2) === 64) {
       setCountPass(2);
     }
@@ -216,6 +241,15 @@ export default function Home() {
       <div className={styles.stoneInformation}>
         <div className={styles.stone} style={{ background: '#000' }} />
         <div className={styles.stoneAmount}>{getColorAmount(board, 1)}枚</div>
+        <div className={styles.stoneHolder}>
+          {Array.from({ length: restBlackStone.length }, (_, i) => (
+            <div className={styles.restStone} key={i}>
+              <div className={styles.restBlackStone} />
+              <div className={styles.restWhiteStone} />
+            </div>
+          ))}
+        </div>
+        <div className={styles.adjustDesign} />
       </div>
       <div className={styles.gapSpace} />
       {/* ボードの情報 */}
@@ -251,6 +285,15 @@ export default function Home() {
       <div className={styles.gapSpace} />
       {/* 白の石の情報 */}
       <div className={styles.stoneInformation}>
+        <div className={styles.adjustDesign} />
+        <div className={styles.stoneHolder}>
+          {Array.from({ length: restWhiteStone.length }, (_, i) => (
+            <div className={styles.restStone} key={i}>
+              <div className={styles.restBlackStone} />
+              <div className={styles.restWhiteStone} />
+            </div>
+          ))}
+        </div>
         <div className={styles.stoneAmount}>{getColorAmount(board, 2)}枚</div>
         <div className={styles.stone} style={{ background: '#f8f8ff' }} />
       </div>
