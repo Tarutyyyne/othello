@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import styles from './page.module.css';
 
 //白、黒、候補地の数を呼び出す関数
@@ -31,7 +31,7 @@ const directions = [
 
 //そのx,y座標に次のターンの色の石を置けるかを判定する関数
 const puttableSearch = (
-  board: number[][], //#TODOあとでチェックする
+  // board: number[][], //#TODOあとでチェックする
   newBoard: number[][],
   directions: number[][],
   x: number,
@@ -89,7 +89,7 @@ const displayPuttableCell = (
   for (let p = 0; p < board.flat().length; p++) {
     const coordinateX = p % 8;
     const coordinateY = Math.floor(p / 8);
-    puttableSearch(board, newBoard, directions, coordinateX, coordinateY, turnColor);
+    puttableSearch(newBoard, directions, coordinateX, coordinateY, turnColor);
   }
 };
 
@@ -103,15 +103,27 @@ const restWhiteStone: number[] = [
 ];
 
 const reduceRestStone = (turnColor: number, restBlackStone: number[], restWhiteStone: number[]) => {
-  if (turnColor === 1) {
-    console.log('reduceBlackStone');
-    restBlackStone.pop();
-    return restBlackStone.length;
-  }
-  if (turnColor === 2) {
-    console.log('reduceWhiteStone');
-    restWhiteStone.pop();
-    return restWhiteStone.length;
+  //お互いに石がまだ手元にあるとき
+  //そのターンの石が置かれたら、そのターンの色の人の手元の石の減らす
+  if (restBlackStone.length !== 0 && restWhiteStone.length !== 0) {
+    if (turnColor === 1) {
+      restBlackStone.pop();
+      return restBlackStone.length;
+    } else if (turnColor === 2) {
+      restWhiteStone.pop();
+      return restWhiteStone.length;
+    } else {
+      return;
+    }
+    //どちらかの石が手元からなくなったら相手の手元にある石を拝借して減らす
+  } else {
+    if (restBlackStone.length === 0) {
+      restWhiteStone.pop();
+      return;
+    } else {
+      restBlackStone.pop();
+      return;
+    }
   }
 };
 
@@ -129,6 +141,7 @@ export default function Home() {
     [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
   const [countPass, setCountPass] = useState(0);
+  const stonePutRef = useRef(false);
 
   //以下structureClone()というboardの配列を変更する関数
   const newBoard: number[][] = structuredClone(board);
@@ -140,7 +153,6 @@ export default function Home() {
     newBoard: number[][],
     directions: number[][],
     turnColor: number,
-    countPass: number,
   ) => {
     console.log('======TURN', 60 + 1 - (restBlackStone.length + restWhiteStone.length), '=====');
     //クリックしたところが
@@ -161,7 +173,7 @@ export default function Home() {
           const extendSearchX: number = directions[i][1] * j;
           if (
             newBoard[nextY + extendSearchY] !== undefined &&
-            newBoard[nextY + extendSearchY][nextX + extendSearchX] === 0
+            newBoard[nextY + extendSearchY][nextX + extendSearchX] % 3 === 0
           ) {
             break; //そこに空白があれば石を置けないのでfor文を終わらせる
           }
@@ -193,9 +205,11 @@ export default function Home() {
               setTurnColor(2 / turnColor);
               setCountPass(0);
             }
-            //石を置けたので残りの石を減らす
-            reduceRestStone(turnColor, restBlackStone, restWhiteStone);
             setBoard(newBoard);
+            //ここでstonePutRefをtrueにして残りの石の表示を一度だけ変更できるようにしたい
+            if (!stonePutRef.current) {
+              stonePutRef.current = true;
+            }
             break; //石を置いたのにまだ続けるわけにはいかないから
           }
         }
@@ -205,6 +219,11 @@ export default function Home() {
     //全て置けたら終了にする
     if (getColorAmount(newBoard, 1) + getColorAmount(newBoard, 2) === 64) {
       setCountPass(2);
+    }
+    //ここで一度だけ手元の残りの石の表示を変更する
+    if (stonePutRef.current === true) {
+      reduceRestStone(turnColor, restBlackStone, restWhiteStone);
+      stonePutRef.current = false;
     }
   };
 
@@ -231,10 +250,6 @@ export default function Home() {
             </div>
           )}
         </div>
-        {/* <div className={styles.displayAmount}>
-          <p className={styles.blackAmount}>BLACK: {getColorAmount(board, 1)} </p>
-          <p className={styles.whiteAmount}>WHITE: {getColorAmount(board, 2)}</p>
-        </div> */}
       </div>
       <div className={styles.gapSpace} />
       {/* 黒の石の情報 */}
@@ -259,7 +274,7 @@ export default function Home() {
             <div
               className={styles.cell}
               key={`${x}-${y}`}
-              onClick={() => clickHandler(x, y, board, newBoard, directions, turnColor, countPass)}
+              onClick={() => clickHandler(x, y, board, newBoard, directions, turnColor)}
             >
               {color !== 0 && (
                 <div
@@ -303,3 +318,4 @@ export default function Home() {
 
 // #TODO何枚優勢なのか表示するのかは任せる
 //そのためにはif文回す必要あり
+//getColorAmount(board, 2)
