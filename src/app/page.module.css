@@ -1,3 +1,10 @@
+/* パソコン版は２カラム、スマホ版は１カラムでいく */
+@media screen and (width <= 768px) {
+  .container {
+    display: block;
+  }
+}
+
 .container {
   display: flex;
   flex-direction: column;

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "run-p dev:*",
-    "dev:next": "next dev -p 3000",
+    "dev:next": "next dev -p 3000 -H 0.0.0.0",
     "dev:hcm": "hcm 'src/**/*.module.css' -w",
     "hcm": "hcm 'src/**/*.module.css'",
     "build": "next build",
