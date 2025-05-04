@@ -3,6 +3,10 @@
   .container {
     display: block;
   }
+
+  .column {
+    width: 100%;
+  }
 }
 
 .container {
