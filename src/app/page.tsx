@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 import styles from './page.module.css';
 
 //白、黒、候補地の数を呼び出す関数
@@ -271,19 +272,49 @@ export default function Home() {
       <div className={styles.gapSpace} />
       <div className={styles.gapSpace} />
       <div className={styles.gapSpace} />
-      {/* 黒の石の情報 */}
-      <div className={styles.stoneInformation}>
-        <div className={styles.stone} style={{ background: '#000' }} />
-        <div className={styles.stoneAmount}>{getColorAmount(board, 1)}枚</div>
-        <div className={styles.stoneHolder}>
-          {Array.from({ length: restBlackStone.length }, (_, i) => (
-            <div className={styles.restStone} key={i}>
-              <div className={styles.restBlackStone} />
-              <div className={styles.restWhiteStone} />
+      <div>
+        {isMobile ? (
+          <div className={styles.stoneInformation}>
+            <div
+              className={styles.stone}
+              style={{
+                fontSize: '200%',
+                background: '#000',
+                height: '100%',
+                aspectRatio: '1 / 1',
+                color: '#f8f8ff',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              {getColorAmount(board, 1)}
             </div>
-          ))}
-        </div>
-        <div className={styles.adjustDesign} />
+            <div className={styles.stoneHolder}>
+              {Array.from({ length: restBlackStone.length }, (_, i) => (
+                <div className={styles.restStone} key={i}>
+                  <div className={styles.restBlackStone} />
+                  <div className={styles.restWhiteStone} />
+                </div>
+              ))}
+            </div>
+            <div className={styles.adjustDesign} />
+          </div>
+        ) : (
+          <div className={styles.stoneInformation}>
+            <div className={styles.stone} style={{ background: '#000' }} />
+            <div className={styles.stoneAmount}>{getColorAmount(board, 1)}枚</div>
+            <div className={styles.stoneHolder}>
+              {Array.from({ length: restBlackStone.length }, (_, i) => (
+                <div className={styles.restStone} key={i}>
+                  <div className={styles.restBlackStone} />
+                  <div className={styles.restWhiteStone} />
+                </div>
+              ))}
+            </div>
+            <div className={styles.adjustDesign} />
+          </div>
+        )}
       </div>
       <div className={styles.gapSpace} />
       {/* ボードの情報 */}
@@ -307,8 +338,8 @@ export default function Home() {
                           : turnColor === 1
                             ? '#000'
                             : '#f8f8ff',
-                    width: color === 3 ? '24px' : '56px',
-                    height: color === 3 ? '24px' : '56px',
+                    width: color === 3 ? '30%' : '70%',
+                    height: color === 3 ? '30%' : '70%',
                   }}
                 />
               )}
@@ -318,6 +349,7 @@ export default function Home() {
       </div>
       <div className={styles.gapSpace} />
       {/* 白の石の情報 */}
+
       <div className={styles.stoneInformation}>
         <div className={styles.adjustDesign} />
         <div className={styles.stoneHolder}>

@@ -1,14 +1,4 @@
 /* パソコン版は２カラム、スマホ版は１カラムでいく */
-@media screen and (width <= 768px) {
-  .container {
-    display: block;
-  }
-
-  .column {
-    width: 100%;
-  }
-}
-
 .container {
   display: flex;
   flex-direction: column;
@@ -124,7 +114,7 @@
   justify-content: flex-start;
 
   /* オセロ初期状態64-4 * 二つの石の幅4+4 */
-  width: 426px;
+  width: 428px;
   height: 40px;
   border: 4px solid darkgreen;
   border-radius: 4px;
@@ -179,4 +169,92 @@
   height: 56px;
   background-color: black;
   border-radius: 50%;
+}
+
+/* デバイス検知も追加で */
+@media screen and (width <= 375px) {
+  .container {
+    display: block;
+    width: auto;
+    height: auto;
+    padding: 0 1rem;
+  }
+
+  .gapSpace {
+    width: 100%;
+  }
+
+  .turnAndResetButton {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    height: auto;
+  }
+
+  .displayTurn,
+  .resetButton {
+    width: 100%;
+    font-size: 24px;
+  }
+
+  .gameLogBackground {
+    width: 100%;
+  }
+
+  .gameLogInformation {
+    flex-direction: column;
+    gap: 10px;
+    height: auto;
+    padding: 10px 0;
+    font-size: 95%;
+  }
+
+  .stoneInformation {
+    width: 100%;
+  }
+
+  .stoneAmount {
+    font-size: 85%;
+  }
+
+  .stoneHolder {
+    width: 66%;
+    height: 30px;
+  }
+
+  .restStone {
+    display: flex;
+    width: 33%;
+    height: 100%;
+  }
+
+  .restBlackStone {
+    width: 50%;
+    height: 100%;
+    background-color: black;
+  }
+
+  .restWhiteStone {
+    width: 5%;
+    height: 100%;
+    background-color: #f8f8ff;
+  }
+
+  .board {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .cell {
+    width: 12.5%;
+    height: 12.5%;
+    aspect-ratio: 1/1;
+  }
+
+  .stone {
+    /* width: 70%; */
+    height: 70%;
+    aspect-ratio: 1 / 1;
+  }
 }
