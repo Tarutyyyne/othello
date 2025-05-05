@@ -175,7 +175,7 @@
 }
 
 /* デバイス検知も追加で */
-@media screen and (width <= 375px) {
+@media screen and (width <= 500px) {
   .container {
     display: block;
     width: auto;
