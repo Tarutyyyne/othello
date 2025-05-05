@@ -355,7 +355,7 @@ export default function Home() {
           <div className={styles.stoneInformation}>
             <div className={styles.adjustDesign} />
             <div className={styles.stoneHolder}>
-              {Array.from({ length: restBlackStone.length }, (_, i) => (
+              {Array.from({ length: restWhiteStone.length }, (_, i) => (
                 <div className={styles.restStone} key={i}>
                   <div className={styles.restBlackStone} />
                   <div className={styles.restWhiteStone} />
@@ -382,7 +382,7 @@ export default function Home() {
           <div className={styles.stoneInformation}>
             <div className={styles.adjustDesign} />
             <div className={styles.stoneHolder}>
-              {Array.from({ length: restBlackStone.length }, (_, i) => (
+              {Array.from({ length: restWhiteStone.length }, (_, i) => (
                 <div className={styles.restStone} key={i}>
                   <div className={styles.restBlackStone} />
                   <div className={styles.restWhiteStone} />
