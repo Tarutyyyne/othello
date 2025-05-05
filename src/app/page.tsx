@@ -272,6 +272,7 @@ export default function Home() {
       <div className={styles.gapSpace} />
       <div className={styles.gapSpace} />
       <div className={styles.gapSpace} />
+      {/* ↓↓↓スマホで表示したときに変更させる↓↓↓ */}
       <div>
         {isMobile ? (
           <div className={styles.stoneInformation}>
@@ -349,24 +350,50 @@ export default function Home() {
       </div>
       <div className={styles.gapSpace} />
       {/* 白の石の情報 */}
-
-      <div className={styles.stoneInformation}>
-        <div className={styles.adjustDesign} />
-        <div className={styles.stoneHolder}>
-          {Array.from({ length: restWhiteStone.length }, (_, i) => (
-            <div className={styles.restStone} key={i}>
-              <div className={styles.restBlackStone} />
-              <div className={styles.restWhiteStone} />
+      <div>
+        {isMobile ? (
+          <div className={styles.stoneInformation}>
+            <div className={styles.adjustDesign} />
+            <div className={styles.stoneHolder}>
+              {Array.from({ length: restBlackStone.length }, (_, i) => (
+                <div className={styles.restStone} key={i}>
+                  <div className={styles.restBlackStone} />
+                  <div className={styles.restWhiteStone} />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <div className={styles.stoneAmount}>{getColorAmount(board, 2)}枚</div>
-        <div className={styles.stone} style={{ background: '#f8f8ff' }} />
+            <div
+              className={styles.stone}
+              style={{
+                fontSize: '200%',
+                background: '#f8f8ff',
+                height: '100%',
+                aspectRatio: '1 / 1',
+                color: '#000',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              {getColorAmount(board, 2)}
+            </div>
+          </div>
+        ) : (
+          <div className={styles.stoneInformation}>
+            <div className={styles.adjustDesign} />
+            <div className={styles.stoneHolder}>
+              {Array.from({ length: restBlackStone.length }, (_, i) => (
+                <div className={styles.restStone} key={i}>
+                  <div className={styles.restBlackStone} />
+                  <div className={styles.restWhiteStone} />
+                </div>
+              ))}
+            </div>
+            <div className={styles.stoneAmount}>{getColorAmount(board, 2)}枚</div>
+            <div className={styles.stone} style={{ background: '#f8f8ff' }} />
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
-// #TODO何枚優勢なのか表示するのかは任せる
-//そのためにはif文回す必要あり
-//getColorAmount(board, 2)
