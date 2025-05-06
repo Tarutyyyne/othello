@@ -132,6 +132,19 @@ const reduceRestStone = (turnColor: number, restBlackStone: number[], restWhiteS
   }
 };
 
+const resetRestStone = (restBlackStone: number[], restWhiteStone: number[]) => {
+  if (restBlackStone.length < 30) {
+    for (let i = restBlackStone.length; i < 30; i++) {
+      restBlackStone.push(i);
+    }
+  }
+  if (restWhiteStone.length < 30) {
+    for (let i = restWhiteStone.length; i < 30; i++) {
+      restWhiteStone.push(i);
+    }
+  }
+};
+
 //============以下home====================================
 export default function Home() {
   const [turnColor, setTurnColor] = useState(1);
@@ -243,16 +256,7 @@ export default function Home() {
       [0, 0, 0, 0, 0, 0, 0, 0],
     ]);
     setTurnColor(1);
-    if (restBlackStone.length < 30) {
-      for (let i = restBlackStone.length; i < 30; i++) {
-        restBlackStone.push(i);
-      }
-    }
-    if (restWhiteStone.length < 30) {
-      for (let i = restWhiteStone.length; i < 30; i++) {
-        restWhiteStone.push(i);
-      }
-    }
+    resetRestStone(restBlackStone, restWhiteStone);
   };
 
   return (
