@@ -151,18 +151,26 @@ export default function Home() {
   const [board, setBoard] = useState([
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 3, 0, 0, 0, 0],
-    [0, 0, 3, 2, 1, 0, 0, 0],
-    [0, 0, 0, 1, 2, 3, 0, 0],
-    [0, 0, 0, 0, 3, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 2, 1, 0, 0, 0],
+    [0, 0, 0, 1, 2, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
   const [countPass, setCountPass] = useState(0);
   const stonePutRef = useRef(false);
+  const initialExecuteRef = useRef(true);
 
   //以下structureClone()というboardの配列を変更する関数
   const newBoard: number[][] = structuredClone(board);
+
+  //初めてレンダリングしたときだけ一度実行
+  if (initialExecuteRef.current === true) {
+    displayPuttableCell(board, newBoard, directions, 2 / turnColor);
+    setBoard(newBoard);
+    initialExecuteRef.current = false;
+  }
 
   const clickHandler = (
     x: number,
@@ -241,7 +249,6 @@ export default function Home() {
       stonePutRef.current = false;
     }
   };
-
   //リスタートボタンの中身
   //const resetHandler = () => window.location.reload();はreactの思想に反する
   const resetHandler = () => {
