@@ -243,6 +243,16 @@ export default function Home() {
       [0, 0, 0, 0, 0, 0, 0, 0],
     ]);
     setTurnColor(1);
+    if (restBlackStone.length < 30) {
+      for (let i = restBlackStone.length; i < 30; i++) {
+        restBlackStone.push(i);
+      }
+    }
+    if (restWhiteStone.length < 30) {
+      for (let i = restWhiteStone.length; i < 30; i++) {
+        restWhiteStone.push(i);
+      }
+    }
   };
 
   return (
