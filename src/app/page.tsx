@@ -230,8 +230,19 @@ export default function Home() {
   };
 
   //リスタートボタンの中身
+  //const resetHandler = () => window.location.reload();はreactの思想に反する
   const resetHandler = () => {
-    window.location.reload();
+    setBoard([
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 3, 0, 0, 0, 0],
+      [0, 0, 3, 2, 1, 0, 0, 0],
+      [0, 0, 0, 1, 2, 3, 0, 0],
+      [0, 0, 0, 0, 3, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+    ]);
+    setTurnColor(1);
   };
 
   return (
