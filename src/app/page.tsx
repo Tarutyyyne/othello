@@ -14,6 +14,11 @@ const getColorAmount = (newBoard: number[][], amountIndex: number) => {
   return colorAmount;
 };
 
+const colorToNumber = (colorName: string): number => {
+  const colorList: string[] = ['empty', 'black', 'white', 'puttable'];
+  return colorList.indexOf(colorName);
+};
+
 //方向を示すための配列、上から時計回り
 const directions = [
   [-1, 0], //上
@@ -29,7 +34,7 @@ const directions = [
 //そのx,y座標に次のターンの色の石を置けるかを判定する関数
 const puttableSearch = (
   // board: number[][], //#TODOあとでチェックする
-  newBoard: number[][],
+  puttableBoard: number[][],
   directions: number[][],
   x: number,
   y: number,
@@ -38,11 +43,14 @@ const puttableSearch = (
   //#TODOこのifとforを減らしたい
   //このx,yはそのマスのx,y座標
   //そこに候補地が表示されていたら一度クリーンする
-  if (newBoard[y][x] === 3) {
-    newBoard[y][x] = 0;
+  if (puttableBoard[y][x] === colorToNumber('puttable')) {
+    puttableBoard[y][x] = colorToNumber('empty');
   }
   //そこに白黒があったらreturnして終了
-  if (newBoard[y][x] === 1 || newBoard[y][x] === 2) {
+  if (
+    puttableBoard[y][x] === colorToNumber('black') ||
+    puttableBoard[y][x] === colorToNumber('white')
+  ) {
     return;
   }
   //そこが空白なら置けるかどうかの探索を開始する
@@ -50,23 +58,23 @@ const puttableSearch = (
     const nextY: number = y + dy;
     const nextX: number = x + dx;
     //隣の石が次のターンの色と異なる色（現在の色）をしているときに石をおける
-    if (newBoard[nextY] !== undefined && newBoard[nextY][nextX] === turnColor) {
+    if (puttableBoard[nextY] !== undefined && puttableBoard[nextY][nextX] === turnColor) {
       //初期値+1に方向のベクトルをj倍かけてそこに空白がないか検索
-      for (let j = 1; j < newBoard.length; j++) {
+      for (let j = 1; j < puttableBoard.length; j++) {
         const extendSearchY: number = dy * j;
         const extendSearchX: number = dx * j;
         if (
-          newBoard[nextY + extendSearchY] !== undefined &&
-          newBoard[nextY + extendSearchY][nextX + extendSearchX] % 3 === 0
+          puttableBoard[nextY + extendSearchY] !== undefined &&
+          puttableBoard[nextY + extendSearchY][nextX + extendSearchX] % 3 === 0
         ) {
           break; //そこに空白と候補地があれば石を置けないのでfor文を終わらせる
         }
         if (
           //行きついた先に次のターンの色の石があったら
-          newBoard[nextY + extendSearchY] !== undefined &&
-          newBoard[nextY + extendSearchY][nextX + extendSearchX] === 2 / turnColor
+          puttableBoard[nextY + extendSearchY] !== undefined &&
+          puttableBoard[nextY + extendSearchY][nextX + extendSearchX] === 2 / turnColor
         ) {
-          newBoard[y][x] = 3; //候補地をおく
+          puttableBoard[y][x] = colorToNumber('puttable'); //候補地をおく
         }
       }
     }
@@ -79,15 +87,34 @@ const puttableSearch = (
 //戻り値：なし
 const displayPuttableCell = (
   board: number[][],
-  newBoard: number[][],
+  puttableBoard: number[][],
   directions: number[][],
   turnColor: number,
-) => {
+): number[][] => {
   for (let p = 0; p < board.flat().length; p++) {
     const coordinateX = p % 8;
     const coordinateY = Math.floor(p / 8);
-    puttableSearch(newBoard, directions, coordinateX, coordinateY, turnColor);
+    puttableSearch(puttableBoard, directions, coordinateX, coordinateY, turnColor);
   }
+  return puttableBoard;
+};
+
+//boardを渡すと計算値としてputtableBoardを返す
+//この実装によってリセットボタンを押したときもsetBoardの引数に3を入れずにすむ
+//
+//その時点でのboardを渡す
+//displayPuttableを通じて
+//その地点に候補地を代入し
+//戻り値としてputtableBoardを返す
+//
+
+const addPuttableBoard = (
+  board: number[][],
+  puttableBoard: number[][],
+  directions: number[][],
+  turnColor: number,
+): number[][] => {
+  return displayPuttableCell(board, puttableBoard, directions, turnColor);
 };
 
 // const restBlackStone: number[] = [
@@ -106,11 +133,14 @@ const restWhiteStone: number[] = Array.from({ length: 30 }, (_, i) => i + 1);
 const reduceRestStone = (turnColor: number, restBlackStone: number[], restWhiteStone: number[]) => {
   //お互いに石がまだ手元にあるとき
   //そのターンの石が置かれたら、そのターンの色の人の手元の石の減らす
-  if (restBlackStone.length !== 0 && restWhiteStone.length !== 0) {
-    if (turnColor === 1) {
+  if (
+    restBlackStone.length !== colorToNumber('empty') &&
+    restWhiteStone.length !== colorToNumber('empty')
+  ) {
+    if (turnColor === colorToNumber('black')) {
       restBlackStone.pop();
       return restBlackStone.length;
-    } else if (turnColor === 2) {
+    } else if (turnColor === colorToNumber('white')) {
       restWhiteStone.pop();
       return restWhiteStone.length;
     } else {
@@ -118,7 +148,7 @@ const reduceRestStone = (turnColor: number, restBlackStone: number[], restWhiteS
     }
     //どちらかの石が手元からなくなったら相手の手元にある石を拝借して減らす
   } else {
-    if (restBlackStone.length === 0) {
+    if (restBlackStone.length === colorToNumber('empty')) {
       restWhiteStone.pop();
       return;
     } else {
@@ -157,23 +187,15 @@ export default function Home() {
   const [countPass, setCountPass] = useState(0);
   const stonePutRef = useRef(false);
   const initialExecuteRef = useRef(true);
-  const numberToColorArray: { [key: string]: number } = {
-    blank: 0,
-    black: 1,
-    white: 2,
-    puttable: 3,
-  };
 
   //以下structureClone()というboardの配列を変更する関数
   const newBoard: number[][] = structuredClone(board);
-
   //初めてレンダリングしたときだけ一度実行
   if (initialExecuteRef.current === true) {
     displayPuttableCell(board, newBoard, directions, 2 / turnColor);
     setBoard(newBoard);
     initialExecuteRef.current = false;
   }
-
   const clickHandler = (
     x: number,
     y: number,
@@ -182,9 +204,25 @@ export default function Home() {
     directions: number[][],
     turnColor: number,
   ) => {
+    console.log(
+      addPuttableBoard(
+        [
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 2, 1, 0, 0, 0],
+          [0, 0, 0, 1, 2, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+        ],
+        newBoard,
+        directions,
+        turnColor,
+      ),
+    );
     //クリックしたところが
     // 空白じゃなければreturnする
-    console.log(numberToColorArray['blank']);
     if (board[y][x] % 3 !== 0) {
       return; //白と黒の石があるところをクリックして関数を起動させてはいけない(関数を止める)
     }
@@ -222,10 +260,10 @@ export default function Home() {
             //まずdisplayPuttableCellで候補地を検索
             //候補地が0のときならばsetCountPass(1)を実行、「パス」を表示
             displayPuttableCell(board, newBoard, directions, turnColor);
-            if (getColorAmount(newBoard, 3) === 0) {
+            if (getColorAmount(newBoard, 3) === colorToNumber('empty')) {
               setCountPass(1); //setCountPass(1)で●●のパスと表示できるはず
               displayPuttableCell(board, newBoard, directions, 2 / turnColor);
-              if (getColorAmount(newBoard, 3) === 0) {
+              if (getColorAmount(newBoard, 3) === colorToNumber('empty')) {
                 setCountPass(2);
               }
             } else {
@@ -255,16 +293,23 @@ export default function Home() {
   //リスタートボタンの中身
   //const resetHandler = () => window.location.reload();はreactの思想に反する
   const resetHandler = () => {
-    setBoard([
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 3, 0, 0, 0, 0],
-      [0, 0, 3, 2, 1, 0, 0, 0],
-      [0, 0, 0, 1, 2, 3, 0, 0],
-      [0, 0, 0, 0, 3, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-    ]);
+    setBoard(
+      addPuttableBoard(
+        [
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 2, 1, 0, 0, 0],
+          [0, 0, 0, 1, 2, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+        ],
+        newBoard,
+        directions,
+        turnColor,
+      ),
+    );
     setTurnColor(1);
     resetRestStone(restBlackStone, restWhiteStone);
   };
@@ -284,7 +329,7 @@ export default function Home() {
 
       <div
         className={styles.gameLogBackground}
-        style={{ background: turnColor === 1 ? '#000' : '#f8f8ff' }}
+        style={{ background: turnColor === colorToNumber('black') ? '#000' : '#f8f8ff' }}
       >
         <div className={styles.gameLogInformation}>
           {countPass === 2 ? (
@@ -298,8 +343,9 @@ export default function Home() {
             </div>
           ) : (
             <div>
-              {countPass === 1 && `${2 / turnColor === 1 ? '黒' : '白'} のパス：`}
-              次は{turnColor === 1 ? '黒' : '白'}のターン
+              {countPass === 1 &&
+                `${2 / turnColor === colorToNumber('white') ? '黒' : '白'} のパス：`}
+              次は{turnColor === colorToNumber('black') ? '黒' : '白'}のターン
             </div>
           )}
         </div>
@@ -362,20 +408,20 @@ export default function Home() {
               key={`${x}-${y}`}
               onClick={() => clickHandler(x, y, board, newBoard, directions, turnColor)}
             >
-              {color !== 0 && (
+              {color !== colorToNumber('empty') && (
                 <div
                   className={styles.stone}
                   style={{
                     background:
-                      color === 1
+                      color === colorToNumber('black')
                         ? '#000'
-                        : color === 2
+                        : color === colorToNumber('white')
                           ? '#f8f8ff'
-                          : turnColor === 1
+                          : turnColor === colorToNumber('black')
                             ? '#000'
                             : '#f8f8ff',
-                    width: color === 3 ? '30%' : '70%',
-                    height: color === 3 ? '30%' : '70%',
+                    width: color === colorToNumber('puttable') ? '30%' : '70%',
+                    height: color === colorToNumber('puttable') ? '30%' : '70%',
                   }}
                 />
               )}
