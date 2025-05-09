@@ -161,6 +161,12 @@ export default function Home() {
   const [countPass, setCountPass] = useState(0);
   const stonePutRef = useRef(false);
   const initialExecuteRef = useRef(true);
+  const numberToColorArray: { [key: string]: number } = {
+    blank: 0,
+    black: 1,
+    white: 2,
+    puttable: 3,
+  };
 
   //以下structureClone()というboardの配列を変更する関数
   const newBoard: number[][] = structuredClone(board);
@@ -182,6 +188,7 @@ export default function Home() {
   ) => {
     //クリックしたところが
     // 空白じゃなければreturnする
+    console.log(numberToColorArray['blank']);
     if (board[y][x] % 3 !== 0) {
       return; //白と黒の石があるところをクリックして関数を起動させてはいけない(関数を止める)
     }
