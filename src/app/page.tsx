@@ -10,12 +10,8 @@ import styles from './page.module.css';
 //引数：board: number[][], amountIndex: number
 //戻り値：amountArray[amountIndex]
 const getColorAmount = (newBoard: number[][], amountIndex: number) => {
-  const emptyAmount: number = newBoard.flat().filter((newBoard) => newBoard === 0).length;
-  const blackAmount: number = newBoard.flat().filter((newBoard) => newBoard === 1).length;
-  const whiteAmount: number = newBoard.flat().filter((newBoard) => newBoard === 2).length;
-  const redAmount: number = newBoard.flat().filter((newBoard) => newBoard === 3).length;
-  const amountArray: number[] = [emptyAmount, blackAmount, whiteAmount, redAmount];
-  return amountArray[amountIndex];
+  const colorAmount: number = newBoard.flat().filter((newBoard) => newBoard === amountIndex).length;
+  return colorAmount;
 };
 
 //方向を示すための配列、上から時計回り
